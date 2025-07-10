@@ -35,65 +35,70 @@ QUIZ_DICT = {
 class QuizDis:
 
     def __init__(self):
-        if st.button("Go to Pillar Melody Quiz"):
-            pillar_random = self.get_random_lst_q1()
-            quiz0 = QUIZ[0]           
-            self.display_q(quiz0, pillar_random)
+        if st.button("Go to Pillar Melody Quiz"):            
+            quiz0 = QUIZ[0]                       
+            self.display(quiz0)
+            #pillar_random = self.get_random_lst_q1()
+            #self.display_q(quiz0, pillar_random)
         
-        if st.button("Go to Melody Pillar Quiz"):
-            melody_random = self.get_random_lst_q2()
+        if st.button("Go to Melody Pillar Quiz"):            
             quiz1 = QUIZ[1]
-            self.display_q(quiz1, melody_random)
+            self.display(quiz1)
+            #melody_random = self.get_random_lst_q2()
+            #self.display_q(quiz1, melody_random)
         
-        if st.button("Go to Pillar Period Quiz"):
-            pillar_period_random = self.get_random_lst_q3()
-            quiz2 = QUIZ[2]
-            self.display_q(quiz2, pillar)
+        if st.button("Go to Pillar Period Quiz"):            
+            quiz2 = QUIZ[2]            
+            self.display(quiz2)
+            #pillar_period_random = self.get_random_lst_q3()
+            #self.display_q(quiz2, pillar_period_random)
             
     
-    @st.dialog('Lets start the quiz', width='large')
-    def display_q(self, 
+    def display_sub(self, 
                   quiz_choice:str, 
                 random_lst:list
+                  ):
+        try:
+            q_item, correct_answer = self.question(quiz_choice, random_lst)
+            user_input_lst = self.input(quiz_choice)                    
+            if st.button("Submit"):
+                self.submit(q_item, correct_answer, user_input_lst, quiz_choice)
+            
+            if st.button("Next Question", key=f"{quiz_choice}_{st.session_state[f'{quiz_choice}_cnt']}", \
+                        disabled=not st.session_state[f'{quiz_choice}_answered']):
+                
+                    self.next(quiz_choice, random_lst)
+        except IndexError:
+            st.write("You have answered all questions in this round.")
+            st.write("Let's review now!")
+            if st.button("Review Round Answers"):
+                self.review(quiz_choice)
+            if st.button("Reset Round"):
+                self.reset(quiz_choice)
+                st.rerun()
+
+    #TODO: how to set up the reset rerun perfectly? 
+    @st.dialog('Lets start the quiz', width='large')
+    def display(self, 
+                  quiz_choice:str#,
+                #random_lst:list
                   ):
         if f"{quiz_choice}_answered" not in st.session_state:
             self.reset(quiz_choice)
         
-        #self.round_set(quiz_choice)
+        st.write("Please input your round")
+        num = st.number_input("Input a number", value=0, format="%d", step=1, key=f"{quiz_choice}_round_input")
+        source_lst = QUIZ_DICT[quiz_choice]["q_source_lst"]
+        random_lst = self.generate_random_list(source_lst, num)
+
+        if num == 0:
+            st.write()
         
-        q_item, correct_answer = self.question(quiz_choice, random_lst)
-        user_input_lst = self.input(quiz_choice)
-                
-        if st.button("Submit"):
-            self.submit(q_item, correct_answer, user_input_lst, quiz_choice)
-        
-        if st.button("Next Question", key=f"{quiz_choice}_{st.session_state[f'{quiz_choice}_cnt']}", \
-                     disabled=not st.session_state[f'{quiz_choice}_answered']):
-            self.next(quiz_choice, random_lst)
-              
-        if st.button("Review Round Answers"):
-            self.review(quiz_choice)
-                
-        if st.button("Reset Round"):
-            self.reset(quiz_choice)
-
-
-    # get data
-    @st.cache_data(show_spinner="Getting random list")
-    def get_random_lst_q1(_self) -> list:
-        pillar_random = random.sample(list(pillar), len(pillar))
-        return pillar_random
-
-    @st.cache_data(show_spinner="Getting random list")
-    def get_random_lst_q2(_self) -> list:
-        melody_random = random.sample(list(melody), len(melody))
-        return melody_random
-    
-    @st.cache_data(show_spinner="Getting random list")
-    def get_random_lst_q3(_self) -> list:
-        pillar_period_random = random.sample(list(pillar), len(pillar))
-        return pillar_period_random
-    
+        else:
+            st.write(f"OK! You are gonna take {len(random_lst)} challenges. \
+                     You still have {len(random_lst) - st.session_state[f'{quiz_choice}_cnt']} remained.")            
+            self.display_q_nod(quiz_choice, random_lst)
+                      
        
     def reset(self, quiz_choice:str):
         st.session_state[f"{quiz_choice}_answered"] = False
@@ -101,22 +106,9 @@ class QuizDis:
         st.session_state[f"{quiz_choice}_correct_cnt"] = 0
         st.session_state[f"{quiz_choice}_wrong_record"] = []
     
-    #@st.cache_data(show_spinner="Setting up the round")
-    def round_set(self, quiz_choice:str):
-        q_source_lst = QUIZ_DICT[quiz_choice]["q_source_lst"]
-        st.subheader(f"How many rounds do you want to play?")
-        user_input = st.number_input("Insert a number", 
-                                     value=None, 
-                                     placeholder="...",
-                                     key = f"{quiz_choice}_round_input_{st.session_state[f'{quiz_choice}_cnt']}")
-        
-        if st.button("Submit", key = f"{quiz_choice}_round_input_submit_{st.session_state[f'{quiz_choice}_cnt']}"):
-            round = int(user_input)
-            st.session_state[f"{quiz_choice}_round"] = round
-            res = self.generate_random_list(q_source_lst, round)
-            return res
-        
-    def generate_random_list(self, q_source_lst:list, round:int):
+    #TODO: this random is not random enough, need to be improved    
+    @st.cache_data(show_spinner="Generating random list")
+    def generate_random_list(_self, q_source_lst:list, round:int):
         res = []
         size = len(q_source_lst)
         rest = round % size
@@ -144,7 +136,8 @@ class QuizDis:
         st.subheader(q)
 
         return q_item, correct_answer if isinstance(correct_answer, list) else [correct_answer]
-
+    
+            
     def input(self, quiz_choice:str) ->list:
         key = 1
         user_input_lst = []
@@ -198,7 +191,6 @@ class QuizDis:
         if st.session_state[f"{quiz_choice}_cnt"] < len(random_lst):
             st.rerun(scope="fragment")
         else:
-            st.balloons()
             st.write("You've completed all questions!")
         
     def review(self,  quiz_choice:str):
@@ -220,6 +212,50 @@ class QuizDis:
                         of {q_item[0]} {'is' if len(correct_answer)<2 else 'are'} \
                         {' and '.join(correct_answer)}, not {' and '.join(user_input_lst)}")
 
+
+    ################# method junkyard ##################################
+    @st.dialog('Lets start the quiz', width='large')
+    def display_orig(self, 
+                  quiz_choice:str, 
+                random_lst:list
+                  ):
+        if f"{quiz_choice}_answered" not in st.session_state:
+            self.reset(quiz_choice)
+        
+        #self.round_set(quiz_choice)
+        
+        q_item, correct_answer = self.question(quiz_choice, random_lst)
+        user_input_lst = self.input(quiz_choice)
+                
+        if st.button("Submit"):
+            self.submit(q_item, correct_answer, user_input_lst, quiz_choice)
+        
+        if st.button("Next Question", key=f"{quiz_choice}_{st.session_state[f'{quiz_choice}_cnt']}", \
+                     disabled=not st.session_state[f'{quiz_choice}_answered']):
+            self.next(quiz_choice, random_lst)
+              
+        if st.button("Review Round Answers"):
+            self.review(quiz_choice)
+                
+        if st.button("Reset Round"):
+            self.reset(quiz_choice)
+
+        # get data
+    @st.cache_data(show_spinner="Getting random list")
+    def get_random_lst_q1(_self) -> list:
+        pillar_random = random.sample(list(pillar), len(pillar))
+        return pillar_random
+
+    @st.cache_data(show_spinner="Getting random list")
+    def get_random_lst_q2(_self) -> list:
+        melody_random = random.sample(list(melody), len(melody))
+        return melody_random
+    
+    @st.cache_data(show_spinner="Getting random list")
+    def get_random_lst_q3(_self) -> list:
+        pillar_period_random = random.sample(list(pillar), len(pillar))
+        return pillar_period_random
+         
 
 if __name__ == "__main__":   
     QuizDis()
