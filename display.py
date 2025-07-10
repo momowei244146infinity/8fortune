@@ -10,6 +10,7 @@ QUIZ_DICT = {
     "pillar_melody": {
         "question": "What's the melody of {item}",
         "q_source_lst": pillar,
+        "q_item_cnt":1,
         "answer_dict": pillar_melody_dic,
         "answer_input_cnt": 1,
         "answer_item": "melody",
@@ -18,6 +19,7 @@ QUIZ_DICT = {
     "melody_pillar": {
         "question": "What's the pillar of {item}",
         "q_source_lst": melody,
+        "q_item_cnt":1,
         "answer_dict": melody_pillar_dic,
         "answer_input_cnt": 2,
         "answer_item": "pillar",
@@ -26,6 +28,7 @@ QUIZ_DICT = {
     "pillar_period": {
         "question": "Are {item} in the same period?",
         "q_source_lst": pillar,
+        "q_item_cnt":2,
         "answer_input_cnt": 1,
         "answer_item": "pillar",
         "option_lst": ["Yes", "No"]
@@ -66,8 +69,7 @@ class QuizDis:
             
             if st.button("Next Question", key=f"{quiz_choice}_{st.session_state[f'{quiz_choice}_cnt']}", \
                         disabled=not st.session_state[f'{quiz_choice}_answered']):
-                
-                    self.next(quiz_choice, random_lst)
+                self.next(quiz_choice, random_lst)
         except IndexError:
             st.write("You have answered all questions in this round.")
             st.write("Let's review now!")
@@ -75,9 +77,10 @@ class QuizDis:
                 self.review(quiz_choice)
             if st.button("Reset Round"):
                 self.reset(quiz_choice)
-                st.rerun()
+                st.cache_data.clear()
+                st.rerun(scope="fragment")
 
-    #TODO: how to set up the reset rerun perfectly? 
+    
     @st.dialog('Lets start the quiz', width='large')
     def display(self, 
                   quiz_choice:str#,
@@ -86,17 +89,17 @@ class QuizDis:
         if f"{quiz_choice}_answered" not in st.session_state:
             self.reset(quiz_choice)
         
-        st.write("Please input your round")
-        num = st.number_input("Input a number", value=0, format="%d", step=1, key=f"{quiz_choice}_round_input")
-        source_lst = QUIZ_DICT[quiz_choice]["q_source_lst"]
-        random_lst = self.generate_random_list(source_lst, num)
+        st.write("How many rounds do you want to take?")
+        num = st.number_input("Input a number", value=st.session_state[f"{quiz_choice}_round"], format="%d", step=1, key=f"{quiz_choice}_round_input")
+        st.session_state[f"{quiz_choice}_round"] = num
+        random_lst = self.generate_random_list(quiz_choice, num)
 
         if num == 0:
             st.write()
         
         else:
-            st.write(f"OK! You are gonna take {len(random_lst)} challenges. \
-                     You still have {len(random_lst) - st.session_state[f'{quiz_choice}_cnt']} remained.")            
+            st.write(f"OK! You are gonna take {st.session_state[f'{quiz_choice}_round']} challenges. \
+                     You still have {st.session_state[f'{quiz_choice}_round'] - st.session_state[f'{quiz_choice}_cnt']} remained.")            
             self.display_sub(quiz_choice, random_lst)
                       
        
@@ -105,14 +108,18 @@ class QuizDis:
         st.session_state[f"{quiz_choice}_cnt"] = 0
         st.session_state[f"{quiz_choice}_correct_cnt"] = 0
         st.session_state[f"{quiz_choice}_wrong_record"] = []
+        st.session_state[f"{quiz_choice}_round"] = 0
     
-    #TODO: this random mehod spit same list with same round input    
+    #TODO: this random mehod spit same list with same round input
+    # when hit reset, want to generate a new random list    
     @st.cache_data(show_spinner="Generating random list")
-    def generate_random_list(_self, q_source_lst:list, round:int):
+    def generate_random_list(_self, quiz_choice:str, round:int):
+        q_source_lst = QUIZ_DICT[quiz_choice]["q_source_lst"]
+        multi = QUIZ_DICT[quiz_choice]["q_item_cnt"]
         res = []
         size = len(q_source_lst)
-        rest = round % size
-        loops = round // size + 1
+        rest = (round * multi) % size
+        loops = (round * multi) // size + 1
         for i in range(loops):
             if i + 1 < loops:
                 res.extend(random.sample(q_source_lst, size))
@@ -125,8 +132,8 @@ class QuizDis:
                  random_lst:list):
         index = st.session_state[f"{quiz_choice}_cnt"]
         if quiz_choice == 'pillar_period':
-            q_item1 = random_lst[2*(index-1)]
-            q_item2 = random_lst[2*(index-1)+1]
+            q_item1 = random_lst[2*index]
+            q_item2 = random_lst[2*index+1]
             q_item = [q_item1, q_item2]
             correct_answer = self.is_same_period(q_item1, q_item2)
         else:
@@ -188,10 +195,8 @@ class QuizDis:
     
     def next(self, quiz_choice:str, random_lst:list):
         st.session_state[f"{quiz_choice}_answered"] = False
-        if st.session_state[f"{quiz_choice}_cnt"] < len(random_lst):
-            st.rerun(scope="fragment")
-        else:
-            st.write("You've completed all questions!")
+        st.rerun(scope="fragment")
+        
         
     def review(self,  quiz_choice:str):
         answer_item = QUIZ_DICT[quiz_choice]["answer_item"]
