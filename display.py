@@ -97,7 +97,7 @@ class QuizDis:
         else:
             st.write(f"OK! You are gonna take {len(random_lst)} challenges. \
                      You still have {len(random_lst) - st.session_state[f'{quiz_choice}_cnt']} remained.")            
-            self.display_q_nod(quiz_choice, random_lst)
+            self.display_sub(quiz_choice, random_lst)
                       
        
     def reset(self, quiz_choice:str):
@@ -106,7 +106,7 @@ class QuizDis:
         st.session_state[f"{quiz_choice}_correct_cnt"] = 0
         st.session_state[f"{quiz_choice}_wrong_record"] = []
     
-    #TODO: this random is not random enough, need to be improved    
+    #TODO: this random mehod spit same list with same round input    
     @st.cache_data(show_spinner="Generating random list")
     def generate_random_list(_self, q_source_lst:list, round:int):
         res = []
