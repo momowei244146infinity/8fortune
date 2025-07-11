@@ -3,12 +3,12 @@ from base_data import *
 import random
 
 
-QUIZ = ["pillar_melody", "melody_pillar", "pillar_period"]#, "nobility_forward"]
+QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward"]#, "nobility_forward"]
 
 
 QUIZ_DICT = {
     "pillar_melody": {
-        "question": "What's the melody of {item}",
+        "question": 'What\'s the melody of {item}',
         "q_source_lst": pillar,
         "q_item_cnt":1,
         "answer_dict": pillar_melody_dic,
@@ -32,6 +32,15 @@ QUIZ_DICT = {
         "answer_input_cnt": 1,
         "answer_item": "pillar",
         "option_lst": ["Yes", "No"]
+    },
+    "nobel_man_forward": {
+        "question": "Which grounds do noble men of sky {item} exist",
+        "q_source_lst": sky,
+        "q_item_cnt":1,
+        "answer_dict": nobel_man_forward,
+        "answer_input_cnt": 2,
+        "answer_item": "ground",
+        "option_lst": ground
     }
 }
 
@@ -55,6 +64,10 @@ class QuizDis:
             self.display(quiz2)
             #pillar_period_random = self.get_random_lst_q3()
             #self.display_q(quiz2, pillar_period_random)
+        
+        if st.button("Go to Nobel Man Forward Quiz"):            
+            quiz3 = QUIZ[3]            
+            self.display(quiz3)
             
     
     def display_sub(self, 
@@ -110,8 +123,7 @@ class QuizDis:
         st.session_state[f"{quiz_choice}_wrong_record"] = []
         st.session_state[f"{quiz_choice}_round"] = 0
     
-    #TODO: this random mehod spit same list with same round input
-    # when hit reset, want to generate a new random list    
+   
     @st.cache_data(show_spinner="Generating random list")
     def generate_random_list(_self, quiz_choice:str, round:int):
         q_source_lst = QUIZ_DICT[quiz_choice]["q_source_lst"]
@@ -138,9 +150,12 @@ class QuizDis:
             correct_answer = self.is_same_period(q_item1, q_item2)
         else:
             q_item = [random_lst[index]]
-            correct_answer = QUIZ_DICT[quiz_choice]["answer_dict"][q_item[0]]        
-        q = QUIZ_DICT[quiz_choice]["question"].format(item=" and ".join(q_item))
-        st.subheader(q)
+            correct_answer = QUIZ_DICT[quiz_choice]["answer_dict"][q_item[0]]  
+        
+        q_item_color = [self.change_item_color(item) for item in q_item] 
+        q = QUIZ_DICT[quiz_choice]["question"].format(item=' and '.join(q_item_color))   
+        
+        st.markdown(q, unsafe_allow_html=True)
 
         return q_item, correct_answer if isinstance(correct_answer, list) else [correct_answer]
     
@@ -206,16 +221,33 @@ class QuizDis:
         st.write(f"You got {correct} correct and {wrong} wrong.")
         for item in st.session_state[f"{quiz_choice}_wrong_record"]:
             q_item, user_input_lst, correct_answer = item
-            #TODO: corresponds melody and pillar
-            # add test item, answer item 
+            q_item = [self.change_item_color(i) for i in q_item]
+            user_input_lst = [self.change_item_color(i) for i in user_input_lst]
+            correct_answer = [self.change_item_color(i) for i in correct_answer]
+            
             if quiz_choice == "pillar_period":
                 q_item1, q_item2 = q_item
-                st.write(f"{q_item1} and {q_item2} are {'not ' if not correct_answer else ''} in the same period.")
-
+                m = f'{q_item1} and {q_item2} are {"not " if not correct_answer else ""} in the same period.'
+            elif quiz_choice == "nobel_man_forward":
+                m = f'Nobel men of {q_item[0]} exists in ground \
+                         {" and ".join(correct_answer)}, not {" and ".join(user_input_lst)}'
             else:
-                st.write(f"{answer_item.capitalize()}{'s' if len(correct_answer)<2 else ''}\
-                        of {q_item[0]} {'is' if len(correct_answer)<2 else 'are'} \
-                        {' and '.join(correct_answer)}, not {' and '.join(user_input_lst)}")
+                m = f'{answer_item.capitalize()}{"s" if len(correct_answer)<2 else ""}\
+                        of {q_item[0]} {"is" if len(correct_answer)<2 else "are"} \
+                        {" and ".join(correct_answer)}, not {" and ".join(user_input_lst)}'
+            st.markdown(m, unsafe_allow_html=True)
+
+    def _change_item_color(self, item:str):
+        color_item = ""
+        for c in item:
+            color_item += color_dic[c]
+        return color_item
+    
+    def change_item_color(self, item:str):
+        return self._change_item_color(item) if item in pillar \
+                                            or item in sky or item in ground \
+                                            else item
+
 
 
     ################# method junkyard ##################################

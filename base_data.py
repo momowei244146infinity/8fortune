@@ -72,7 +72,7 @@ for pillar, melody in pillar_melody_dic.items():
 pillar = list(pillar_melody_dic.keys())
 melody = list(melody_pillar_dic.keys())
 
-nobility_forward = {
+nobel_man_forward = {
     "甲":["丑", "未"],
     "乙":["子", "申"],
     "丙":["亥", "酉"],
@@ -85,7 +85,7 @@ nobility_forward = {
     "癸":["卯", "巳"]
 }
 
-nobility_backward = {
+nobel_man_backward = {
     "寅":["庚", "辛"],
     "卯":["壬", "癸"],
     "巳":["壬", "癸"],
@@ -98,3 +98,30 @@ nobility_backward = {
     "丑":["甲", "戊"],
 }
 
+sky = list(nobel_man_forward.keys())
+ground = list(nobel_man_backward.keys())
+
+color_dic = {
+    "甲":'<span style="color:green">甲</span>',
+    "乙":'<span style="color:green">乙</span>',
+    "丙":'<span style="color:red">丙</span>',
+    "丁":'<span style="color:red">丁</span>',
+    "戊":'<span style="color:brown">戊</span>',
+    "己":'<span style="color:brown">己</span>',
+    "庚":'<span style="color:yellow">庚</span>',
+    "辛":'<span style="color:yellow">辛</span>',
+    "壬":'<span style="color:blue">壬</span>',
+    "癸":'<span style="color:blue">癸</span>',
+    "寅":'<span style="color:green">寅</span>',
+    "卯":'<span style="color:green">卯</span>',
+    "辰":'<span style="color:brown">辰</span>',
+    "巳":'<span style="color:red">巳</span>',
+    "午":'<span style="color:red">午</span>',
+    "未":'<span style="color:brown">未</span>',
+    "申":'<span style="color:yellow">申</span>',
+    "酉":'<span style="color:yellow">酉</span>',
+    "戌":'<span style="color:brown">戌</span>',
+    "亥":'<span style="color:blue">亥</span>',
+    "子":'<span style="color:blue">子</span>',
+    "丑":'<span style="color:brown">丑</span>',
+}
