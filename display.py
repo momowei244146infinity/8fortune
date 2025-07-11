@@ -3,7 +3,7 @@ from base_data import *
 import random
 
 
-QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward"]#, "nobility_forward"]
+QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward", "nobel_man_backward"]#, "nobility_forward"]
 
 
 QUIZ_DICT = {
@@ -34,13 +34,22 @@ QUIZ_DICT = {
         "option_lst": ["Yes", "No"]
     },
     "nobel_man_forward": {
-        "question": "Which grounds do noble men of sky {item} exist",
+        "question": "Which grounds do noble men of sky {item} exist?",
         "q_source_lst": sky,
         "q_item_cnt":1,
         "answer_dict": nobel_man_forward,
         "answer_input_cnt": 2,
         "answer_item": "ground",
         "option_lst": ground
+    },
+    "nobel_man_backward": {
+        "question": "Ground {item} exists noble men for which sky?",
+        "q_source_lst": ground,
+        "q_item_cnt":1,
+        "answer_dict": nobel_man_backward,
+        "answer_input_cnt": 2,
+        "answer_item": "sky",
+        "option_lst": sky
     }
 }
 
@@ -68,6 +77,10 @@ class QuizDis:
         if st.button("Go to Nobel Man Forward Quiz"):            
             quiz3 = QUIZ[3]            
             self.display(quiz3)
+        
+        if st.button("Go to Nobel Man Backward Quiz"):
+            quiz4 = QUIZ[4]            
+            self.display(quiz4)
             
     
     def display_sub(self, 
@@ -231,6 +244,9 @@ class QuizDis:
             elif quiz_choice == "nobel_man_forward":
                 m = f'Nobel men of {q_item[0]} exists in ground \
                          {" and ".join(correct_answer)}, not {" and ".join(user_input_lst)}'
+            elif quiz_choice == "nobel_man_backward":
+                m = f'Ground {q_item[0]} exists nobel man for {" and ".join(correct_answer)}, \
+                    not {" and ".join(user_input_lst)}'
             else:
                 m = f'{answer_item.capitalize()}{"s" if len(correct_answer)<2 else ""}\
                         of {q_item[0]} {"is" if len(correct_answer)<2 else "are"} \
