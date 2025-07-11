@@ -3,8 +3,7 @@ from base_data import *
 import random
 
 
-QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward", "nobel_man_backward"]#, "nobility_forward"]
-
+QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward", "nobel_man_backward"]
 
 QUIZ_DICT = {
     "pillar_melody": {
@@ -107,11 +106,12 @@ class QuizDis:
                 st.rerun(scope="fragment")
 
     
-    @st.dialog('Lets start the quiz', width='large')
+    @st.dialog(' ', width='large')
     def display(self, 
                   quiz_choice:str#,
                 #random_lst:list
                   ):
+        st.title(f'Welcome come to {QUIZ_DICT[quiz_choice]["answer_item"].replace("_", " ").capitalize()} Quiz')
         if f"{quiz_choice}_answered" not in st.session_state:
             self.reset(quiz_choice)
         
