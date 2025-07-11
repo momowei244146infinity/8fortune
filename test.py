@@ -23,7 +23,7 @@ import pandas as pd
 #print(os.listdir(absolute_path))
 
 
-
+"""
 print(os.getcwd())
 print(os.path.abspath("./users"))
 print(os.listdir(os.path.abspath("./users")))
@@ -34,7 +34,7 @@ print(os.listdir(os.path.abspath("./users")))
 df = pd.read_csv("username password.csv", delimiter=",")
 df.loc[len(df)] = ["user1", "pass123"]
 df.to_csv("username password.csv", index=False)
-
+"""
 
 """
 
@@ -49,8 +49,14 @@ if len(os.listdir(os.path.abspath("./users"))) == 0:
     df.to_csv("username password.csv", index=False)
 
 """
+df = pd.read_csv("username password.csv", delimiter=",")
+idx = df['username'] == "user3"
+correct_password = df.loc[idx, "password"].values[0]
 
 
+           
+print(repr(correct_password))
+print(str(correct_password) == "12345678")
 
 
 
