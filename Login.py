@@ -33,8 +33,9 @@ class UserLogin:
         
         
         
+        
                 
-    @st.dialog("Creat new account")
+    @st.dialog("Create new account")
     def create_account(self):
         # select a new username
         user_input_new = st.text_input("Please Create Your Username", value="")
@@ -52,16 +53,20 @@ class UserLogin:
                 st.write("Recreate a password. Your password should only contain numbers, character, _ and lenght between 6 and 10 characters.")
             else:
                 self._create_user_account(user_input_new, password_input_new)
-                if st.button("Go to Quiz"):
-                    pass
+                st.session_state['username'] = user_input_new
+                with st.container(border=True):
+                        st.page_link("./pages/Quiz.py", label="Go to QUIZ!")
     
     def login_account(self):
        
         if 'username' in st.session_state:
             st.write('You are already logged in as ' + st.session_state['username'])
         else:
-            username_input = st.text_input("Username", value="")
-            password_input = st.text_input("Password", value="")
+            col1, col2 = st.columns(2)
+            with col1:
+                username_input = st.text_input("Username", value="")
+            with col2:
+                password_input = st.text_input("Password", value="")
             # user does not exists
             if username_input == "":
                 pass
@@ -72,7 +77,7 @@ class UserLogin:
                     st.write(f"Welcome back, {username_input}!")
                     st.session_state['username'] = username_input
                     st.write("Now let's go the quiz!")
-                    with st.container():
+                    with st.container(border=True):
                         st.page_link("./pages/Quiz.py", label="QUIZ!")
                 else:
                     st.write("Incorrect password. Please try again.")
@@ -104,6 +109,8 @@ class UserLogin:
             st.session_state.clear()
             st.cache_data.clear()
             st.write("You have logged out successfully.")
+            
+            st.rerun()
         else:
             st.write("You are not logged in.")
 

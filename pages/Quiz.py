@@ -1,8 +1,9 @@
 import streamlit as st
 import random
-
+import os
+import pandas as pd
 from base_data import *
-from quiz_base_data import QUIZ, QUIZ_DICT
+from quiz_base_data import *
 
 
 class QuizDis:
@@ -14,7 +15,7 @@ class QuizDis:
         
         else:
             st.title(f"Welcome to Quiz, {st.session_state['username']}! ")
-            if st.button("Go to Pillar Melody Quiz"):            
+            if st.button("Go to Pillar Melody Quiz"):           
                 quiz0 = QUIZ[0]                       
                 self.display(quiz0)
                 #pillar_random = self.get_random_lst_q1()
@@ -213,6 +214,7 @@ class QuizDis:
                         of {q_item[0]} {"is" if len(correct_answer)<2 else "are"} \
                         {" and ".join(correct_answer)}, not {" and ".join(user_input_lst)}'
             st.markdown(m, unsafe_allow_html=True)
+
 
     def _change_item_color(self, item:str):
         color_item = ""
