@@ -22,6 +22,8 @@ class UserLogin:
         st.subheader("Login")   
         self.login_account()     
 
+        if st.button("Logout"):
+            self.logout_account()
         
         if st.button("Create a new account"):
             self.create_account()
@@ -29,8 +31,7 @@ class UserLogin:
         if st.button("Delete Account"):
             self.delete_account()
         
-        if st.button("Logout"):
-            self.logout_account()
+        
         
                 
     @st.dialog("Creat new account")
@@ -55,26 +56,29 @@ class UserLogin:
                     pass
     
     def login_account(self):
-        username_input = st.text_input("Username", value="")
-        password_input = st.text_input("Password", value="")
-
-        # user does not exists
-        if username_input == "":
-            pass
-        elif self.is_username_exist(username_input):
-            if password_input == "":
-                st.write("Please enter your password")
-            elif self.username_password_match(username_input, password_input):
-                st.write(f"Welcome back, {username_input}!")
-                st.session_state['username'] = username_input
-                st.write("Now let's go the quiz!")
-                with st.container():
-                    st.page_link("./pages/Quiz.py", label="QUIZ!")
-            else:
-                st.write("Incorrect password. Please try again.")
-        
+       
+        if 'username' in st.session_state:
+            st.write('You are already logged in as ' + st.session_state['username'])
         else:
-            st.write(f"Username {username_input} does not exist. Need to create a new account")
+            username_input = st.text_input("Username", value="")
+            password_input = st.text_input("Password", value="")
+            # user does not exists
+            if username_input == "":
+                pass
+            elif self.is_username_exist(username_input):
+                if password_input == "":
+                    st.write("Please enter your password")
+                elif self.username_password_match(username_input, password_input):
+                    st.write(f"Welcome back, {username_input}!")
+                    st.session_state['username'] = username_input
+                    st.write("Now let's go the quiz!")
+                    with st.container():
+                        st.page_link("./pages/Quiz.py", label="QUIZ!")
+                else:
+                    st.write("Incorrect password. Please try again.")
+            
+            else:
+                st.write(f"Username {username_input} does not exist. Need to create a new account")
 
     @st.dialog("Delete Account")
     def delete_account(self):
