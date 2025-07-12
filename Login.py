@@ -6,26 +6,10 @@ import re
 import itertools
 import shutil
 from base_data import *
+from quiz_base_data import QUIZ, QUIZ_STATE_FILE_DIC
 
 
-QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward", "nobel_man_backward"]
-QUIZ_STATE_FILE_DIC = {
-    "pillar_melody" : {"primary_column": "pillar",
-                       "primary_column_item_cnt":1,
-                       "primary_column_item_src": pillar}, 
-    "melody_pillar": {"primary_column": "melody",
-                       "primary_column_item_cnt":1,
-                       "primary_column_item_src": melody}, 
-    "pillar_period": {"primary_column": "pillar_pair",
-                       "primary_column_item_cnt":2,
-                       "primary_column_item_src": pillar}, 
-    "nobel_man_forward": {"primary_column": "sky",
-                       "primary_column_item_cnt":1,
-                       "primary_column_item_src": sky}, 
-    "nobel_man_backward": {"primary_column": "ground",
-                       "primary_column_item_cnt":1,
-                       "primary_column_item_src": ground}
-}
+
 
 class UserLogin:
     def __init__(self):
@@ -35,16 +19,20 @@ class UserLogin:
         # new user or existing user
         st.subheader("Please login or create a new account")
 
-        if st.button("Create a new account"):
-            self.create_account()
-
         st.subheader("Login")   
         self.login_account()     
-                
+
+        
+        if st.button("Create a new account"):
+            self.create_account()
+        
         if st.button("Delete Account"):
             self.delete_account()
-            
-    
+        
+        if st.button("Logout"):
+            self.logout_account()
+        
+                
     @st.dialog("Creat new account")
     def create_account(self):
         # select a new username
@@ -78,6 +66,10 @@ class UserLogin:
                 st.write("Please enter your password")
             elif self.username_password_match(username_input, password_input):
                 st.write(f"Welcome back, {username_input}!")
+                st.session_state['username'] = username_input
+                st.write("Now let's go the quiz!")
+                with st.container():
+                    st.page_link("./pages/Quiz.py", label="QUIZ!")
             else:
                 st.write("Incorrect password. Please try again.")
         
@@ -102,6 +94,15 @@ class UserLogin:
         else:
             # create password
             st.write(f"Username {user_input} does not exist. Please input a correct username.")
+
+    def logout_account(self):
+        if 'username' in st.session_state:
+            st.session_state.clear()
+            st.cache_data.clear()
+            st.write("You have logged out successfully.")
+        else:
+            st.write("You are not logged in.")
+
 
     def _create_user_account(self, user_input_new: str, password_input_new: str):
         # add new user and password to csv file(database)

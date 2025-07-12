@@ -1,85 +1,44 @@
 import streamlit as st
-from base_data import *
 import random
 
+from base_data import *
+from quiz_base_data import QUIZ, QUIZ_DICT
 
-QUIZ = ["pillar_melody", "melody_pillar", "pillar_period", "nobel_man_forward", "nobel_man_backward"]
-
-QUIZ_DICT = {
-    "pillar_melody": {
-        "question": 'What\'s the melody of {item}',
-        "q_source_lst": pillar,
-        "q_item_cnt":1,
-        "answer_dict": pillar_melody_dic,
-        "answer_input_cnt": 1,
-        "answer_item": "melody",
-        "option_lst": melody
-    },
-    "melody_pillar": {
-        "question": "What's the pillar of {item}",
-        "q_source_lst": melody,
-        "q_item_cnt":1,
-        "answer_dict": melody_pillar_dic,
-        "answer_input_cnt": 2,
-        "answer_item": "pillar",
-        "option_lst": pillar
-    },
-    "pillar_period": {
-        "question": "Are {item} in the same period?",
-        "q_source_lst": pillar,
-        "q_item_cnt":2,
-        "answer_input_cnt": 1,
-        "answer_item": "pillar",
-        "option_lst": ["Yes", "No"]
-    },
-    "nobel_man_forward": {
-        "question": "Which grounds do noble men of sky {item} exist?",
-        "q_source_lst": sky,
-        "q_item_cnt":1,
-        "answer_dict": nobel_man_forward,
-        "answer_input_cnt": 2,
-        "answer_item": "ground",
-        "option_lst": ground
-    },
-    "nobel_man_backward": {
-        "question": "Ground {item} exists noble men for which sky?",
-        "q_source_lst": ground,
-        "q_item_cnt":1,
-        "answer_dict": nobel_man_backward,
-        "answer_input_cnt": 2,
-        "answer_item": "sky",
-        "option_lst": sky
-    }
-}
 
 class QuizDis:
 
     def __init__(self):
-        if st.button("Go to Pillar Melody Quiz"):            
-            quiz0 = QUIZ[0]                       
-            self.display(quiz0)
-            #pillar_random = self.get_random_lst_q1()
-            #self.display_q(quiz0, pillar_random)
+        if 'username' not in st.session_state:
+            st.write("You have not logged in yet. Please login first.")
+            st.page_link("./Login.py", label="Login")
         
-        if st.button("Go to Melody Pillar Quiz"):            
-            quiz1 = QUIZ[1]
-            self.display(quiz1)
-            #melody_random = self.get_random_lst_q2()
-            #self.display_q(quiz1, melody_random)
-        
-        if st.button("Go to Pillar Period Quiz"):            
-            quiz2 = QUIZ[2]            
-            self.display(quiz2)
-            #pillar_period_random = self.get_random_lst_q3()
-            #self.display_q(quiz2, pillar_period_random)
-        
-        if st.button("Go to Nobel Man Forward Quiz"):            
-            quiz3 = QUIZ[3]            
-            self.display(quiz3)
-        
-        if st.button("Go to Nobel Man Backward Quiz"):
-            quiz4 = QUIZ[4]            
-            self.display(quiz4)
+        else:
+            st.title(f"Welcome to Quiz, {st.session_state['username']}! ")
+            if st.button("Go to Pillar Melody Quiz"):            
+                quiz0 = QUIZ[0]                       
+                self.display(quiz0)
+                #pillar_random = self.get_random_lst_q1()
+                #self.display_q(quiz0, pillar_random)
+            
+            if st.button("Go to Melody Pillar Quiz"):            
+                quiz1 = QUIZ[1]
+                self.display(quiz1)
+                #melody_random = self.get_random_lst_q2()
+                #self.display_q(quiz1, melody_random)
+            
+            if st.button("Go to Pillar Period Quiz"):            
+                quiz2 = QUIZ[2]            
+                self.display(quiz2)
+                #pillar_period_random = self.get_random_lst_q3()
+                #self.display_q(quiz2, pillar_period_random)
+            
+            if st.button("Go to Nobel Man Forward Quiz"):            
+                quiz3 = QUIZ[3]            
+                self.display(quiz3)
+            
+            if st.button("Go to Nobel Man Backward Quiz"):
+                quiz4 = QUIZ[4]            
+                self.display(quiz4)
             
     
     def display_sub(self, 

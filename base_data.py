@@ -125,3 +125,4 @@ color_dic = {
     "子":'<span style="color:blue">子</span>',
     "丑":'<span style="color:brown">丑</span>',
 }
+
